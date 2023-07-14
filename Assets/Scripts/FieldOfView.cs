@@ -11,12 +11,24 @@ public class FieldOfView : MonoBehaviour {
     public LayerMask TargetMask;
     public LayerMask ObstacleMask;
 
+    [HideInInspector]
     public List<Transform> VisibleTargets = new List<Transform>();
 
-    void FindVisibleTarget() {
+    private void Start() {
+        StartCoroutine(FindTargetWithDelay(0.2f));
+    }
+
+    IEnumerator FindTargetWithDelay(float delay) {
+        while (true) {
+            yield return new WaitForSeconds(delay);
+            FindVisibleTargets();
+        }
+    } 
+
+    void FindVisibleTargets() {
         VisibleTargets.Clear();
         Collider[] targetInViewRadius = Physics.OverlapSphere(transform.position, ViewRadius, TargetMask);
-
+        
         for (int i = 0; i < targetInViewRadius.Length; i++) {
             Transform target = targetInViewRadius[i].transform;
             Vector3 dirToTarget = (target.position - transform.position).normalized;
